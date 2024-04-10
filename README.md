@@ -1,6 +1,8 @@
 # EASUN-ISOLAR-SMG-II-CONTROL
 based on https://github.com/suletom/EASUN-ISOLAR-SMX-II-CONTROL.git
 
+modbus Registers mapping for EASUN iSolar SMF II: https://github.com/syssi/esphome-smg-ii/blob/main/docs/SMG-RS232%2BCommunication%2BProtocol%2BV1.0.1.pdf
+
 Documentation collection about controlling an EASUN-ISOLAR-SMX-II chinese off-grid solar inverter.
 
 !! Work in progress, use this at your own risk!!
