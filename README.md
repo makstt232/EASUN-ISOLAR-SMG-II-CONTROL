@@ -1,5 +1,6 @@
 # EASUN-ISOLAR-SMG-II-CONTROL
 based on https://github.com/suletom/EASUN-ISOLAR-SMX-II-CONTROL.git
+
 Documentation collection about controlling an EASUN-ISOLAR-SMX-II chinese off-grid solar inverter.
 
 !! Work in progress, use this at your own risk!!
