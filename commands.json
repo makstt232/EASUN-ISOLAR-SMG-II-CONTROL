@@ -7,6 +7,7 @@
         {"name": "query-modbus", "seq":["query_modbus"],"desc": "query modbus register","args": "[datalogger ip address] [raw_modbus_packet_hex]" },
         {"name": "get-device-info", "seq":["get_wifi_device_id","get_wifi_device_info"],"desc": "gets wifi datalogger device id and other info","args": "[datalogger ip address]" },
         {"name": "get-smg-param", "seq":["get_smg_param"],"desc": "Get ISolar SMG II 5.6 inverter param value","args": "[datalogger ip address]" },
+        {"name": "get-smg-out-prio", "seq":["get_smg_out_prio"],"desc": "Get Output priority","args": "[datalogger ip address]" },
         {"name": "set-smg-param", "seq":["set_smg_param"],"desc": "Set ISolar SMG II 5.6 inverter param value WARNING: this is dangerous and experimental!","args": "[datalogger ip address] [parameter number] [new value]" }
     ],
     "//comment2":"Commands defines modbus tcp commands: some commands are for the wifi plug pro(clean modbus tcp frame: 2byte transaction id, 2byte protocol id, 2byte length, data: 1byte unit id, 1byte funtion code, etc. ), others are handled by the gateway and sent to the modbus rtu device on serial line.",
@@ -21,12 +22,21 @@
         {"name": "get_wifi_device_id","cmd": "{SEQ}0001000aff01160b0a16102d012c"},
         {"name": "query_modbus","cmd": "{ARG2}","raw": true},
         {"name": "get_smg_out_prio","cmd": "{SEQ}0102000aff040103e2040001f3b3", "/*!example form param get/set: whole modbus rtu packet in modbus tcp*/":""},
-        {"name": "set_smg_param","cmd": "{SEQ}0102{LEN}ff040110{ARGP2}{ARGV3}{CRC}", "definition": "get_smx_param"},
+        {"name": "set_smg_param","cmd": "{SEQ}0102{LEN}ff040110{ARGP2}{ARGV3}{CRC}", "definition": "set_smg_param"},
         {"name": "get_smg_param","cmd": "{SEQ}0102{LEN}ff040103{PARAM}{CRC}", "definition":
             [
                 {"num":"001","name":"OutputPriority","address":"012D","type":"UInt16BE","unit": ["UTI","SOL","SBU","SUB"]},
-                {"num":"501","name":"PV Average Voltage","address":"00DB","type":"UInt16BE","rate": 0.1,"format":2,"unit": "V" }
-                
+                {"num":"501","name":"PV average voltage","address":"00DB","type":"UInt16BE","rate": 0.1,"format": 1,"unit": "V"},
+                {"num":"502","name":"Grid voltage","address":"00CA","type":"UInt16BE","rate": 0.1,"format": 1,"unit": "V"},
+                {"num":"503","name":"Output voltage","address":"00D2","type":"UInt16BE","rate": 0.1,"format": 1,"unit": "V"},
+                {"num":"511","name":"PV average power","address":"00DF","type":"UInt16BE","rate": 1,"format": 0,"unit": "W"},
+                {"num":"512","name":"Grid average power","address":"00CC","type":"UInt16BE","rate": 1,"format": 0,"unit": "W"},
+                {"num":"513","name":"Battery average power","address":"00D9","type":"UInt16BE","rate": 1,"format": 0,"unit": "W"},
+                {"num":"514","name":"Output active power","address":"00D5","type":"UInt16BE","rate": 1,"format": 0,"unit": "W"},
+                {"num":"601","name":"DCDC temperature","address":"00E2","type":"Int16BE","rate": 1,"format": 0,"unit": "deg C"},
+                {"num":"602","name":"Inverter temperature","address":"00E3","type":"Int16BE","rate": 1,"format": 0,"unit": "deg C"}
+
+
             ]
         }
     ]
