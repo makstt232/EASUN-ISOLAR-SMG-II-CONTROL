@@ -34,7 +34,37 @@
                 {"num":"513","name":"Battery average power","address":"00D9","type":"UInt16BE","rate": 1,"format": 0,"unit": "W"},
                 {"num":"514","name":"Output active power","address":"00D5","type":"UInt16BE","rate": 1,"format": 0,"unit": "W"},
                 {"num":"601","name":"DCDC temperature","address":"00E2","type":"Int16BE","rate": 1,"format": 0,"unit": "deg C"},
-                {"num":"602","name":"Inverter temperature","address":"00E3","type":"Int16BE","rate": 1,"format": 0,"unit": "deg C"}
+                {"num":"602","name":"Inverter temperature","address":"00E3","type":"Int16BE","rate": 1,"format": 0,"unit": "deg C"},
+		{"num":"603","name":"Fault","address":"0064","type":4,"format":101,"unit":[
+                "00. OK",
+                "01. Inverter over temperature",
+                "02. DC-DC over temperature",
+                "03. Battery voltage is too high",
+                "04. Over Temperature of PV module",
+                "05. Output short circuited",
+                "06. Output voltage is too high",
+                "07. Output voltage is too high",
+                "08. Bus voltage is too hig",
+                "09. Bus soft start failed",
+                "10. PV over current",
+                "11. PV over voltage",
+                "12. DCDC over current",
+                "13. Inverter over current",
+                "14. Bus voltage is too low",
+                "15. Inverter failed (self checking)",
+                "16. Over DC voltage in AC output",
+                "17. Reserved",
+                "18. Output current offset is too high",
+                "19. Inverter current offset is too high",
+                "20. DCDC current offset is too high",
+                "21. PVcurrent offset is too high",
+                "22. Output voltage is too low",
+                "23. Inverter negative power",
+                "24. The host data is lost in the parallel system",
+                "25. Synchronization data lost in the parallel system",
+                "26. Incompatible battery type",
+                "27. Firmware versuin is inconsistent in the parallel system"
+                ]},
 
 
             ]
