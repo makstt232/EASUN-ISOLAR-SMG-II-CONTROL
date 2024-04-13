@@ -22,7 +22,7 @@
         {"name": "get_wifi_device_id","cmd": "{SEQ}0001000aff01160b0a16102d012c"},
         {"name": "query_modbus","cmd": "{ARG2}","raw": true},
         {"name": "get_smg_out_prio","cmd": "{SEQ}0102000aff040103e2040001f3b3", "/*!example form param get/set: whole modbus rtu packet in modbus tcp*/":""},
-        {"name": "set_smg_param","cmd": "{SEQ}0102{LEN}ff040110{ARGP2}{ARGV3}{CRC}", "definition": "set_smg_param"},
+        {"name": "set_smg_param","cmd": "{SEQ}0102{LEN}ff040110{ARGP2}{ARGV3}{CRC}", "definition": "get_smg_param"},
         {"name": "get_smg_param","cmd": "{SEQ}0102{LEN}ff040103{PARAM}{CRC}", "definition":
             [
                 {"num":"001","name":"OutputPriority","address":"012D","type":"UInt16BE","unit": ["UTI","SOL","SBU","SUB"]},
