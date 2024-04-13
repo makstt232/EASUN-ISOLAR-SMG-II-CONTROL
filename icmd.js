@@ -358,7 +358,9 @@ function runscript(args) {
 
                     console.log("String format:\n",data.toString());
                 }
-
+                
+                console.log("Result Data");
+                
                 let cmdstr=getcommseqcmd(command_seq);
                 
                 if (cmdstr === undefined) { 
