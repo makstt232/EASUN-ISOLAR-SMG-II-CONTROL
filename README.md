@@ -4,10 +4,11 @@ based on https://github.com/suletom/EASUN-ISOLAR-SMX-II-CONTROL.git
 Modbus Registers mapping for EASUN iSolar SMG II: 
 https://github.com/syssi/esphome-smg-ii/blob/main/docs/SMG-RS232%2BCommunication%2BProtocol%2BV1.0.1.pdf
 
-Documentation collection about controlling an EASUN-ISOLAR-SMX-II chinese off-grid solar inverter.
+Documentation collection about controlling an EASUN-ISOLAR-SMG-II chinese off-grid solar inverter.
 
 !! Work in progress, use this at your own risk!!
 My test device is an EASUN branded 3.6KW inverter with original firmware (6.63).
+Test Device for EASUN-ISOLAR-SMG-II is an EASUN branded 5.6KW inverter with original firmware (x.xx)
 
 The seller/manufacturer refused to provide any further information about controlling/monitoring the device on wifi and the supplied PC software is limited and has some bugs. My goal is to have the ability to control the inverter by software without any external serial/etc. device. The supplied tool is primary a helper to reverse engineer the communication.
 
@@ -29,9 +30,9 @@ My observations about the provided original installation process are the followi
 1. install nodejs (with npm) and git
 > apt install git nodejs
 2. clone the repo
->git clone https://github.com/suletom/EASUN-ISOLAR-SMX-II-CONTROL.git
+>git clone https://github.com/suletom/EASUN-ISOLAR-SMG-II-CONTROL.git
 >
->cd EASUN-ISOLAR-SMX-II-CONTROL
+>cd EASUN-ISOLAR-SMG-II-CONTROL
 3. install needed node modules: 
 >npm install
 4. run the utility
@@ -70,30 +71,48 @@ Example to query all params one by one with crc check:
 
 Some register addresses has connection by the ones sent on serial line but not all of them and i think this command is not a standard MODBUS TCP for the inverter, rather something for the datalogger.
 Example(same as above without parsing): 
+_For SMX-II_
 >npm start query-modbus [datalogger ip address] aaaa00010003001100
+_For SMG-II_
+>npm start query-modbus [datalogger ip address] aaaa01020003001100
 
 These are modbus tcp commands: i suspect some commands are for the wifi plug pro(clean modbus tcp frame: 2byte transaction id, 2byte protocol id, 2byte 
 length, data: 1byte unit id, 1byte funtion code, etc. ), others are handled by the gateway and sent to the modbus rtu device on serial line.
 
 Modbus commands for the inverter: 2byte transaction id, 2byte protocol id, 2byte length, data: 1byte unit id, 1byte funtion code, (modbus rtu packet:  1byte unit id, 1byte funtion code(for the inverter), 2byte register address, 2byte register offset, 2byte crc( crc16/MODBUS: from the beginning of the modbus rtu packet))
 
-This one reads the inverter output priority parameter:
->npm start query-modbus aaaa0001000aff04ff03e2040001e66d
+**This one reads the inverter output priority parameter:**
+
+_For SMX-II_
+>npm start query-modbus aaaa**0001**000aff04ff03e2040001e66d
 
 Request:
-aa aa 00 01 00 0a ff 04   ff 03 e2 04 00 01 e6 6d
+aa aa **00 01** 00 0a ff 04   ff 03 e2 04 00 01 e6 6d
 
 aaaa(trid)  0001(prot.id)  000a(length) ff(unit id) 04(functcode) ff(unit id) 03(functcode) e204(register address(seen on pc software serial)) 0001(offset) e66d(CRC16/modbus)
 
 Response should be:
-aa aa 00 01 00 09 ff 04   01 03 02 00 01 79 84
+aa aa **00 01** 00 09 ff 04   ff 03 02 00 01 79 84
 
-aaaa(trid) 0001(prot.id)  0009(length) ff(unit id) 04(functcode) 01(unit id) 03(functcode) 02(length) 0001(data(here: 0001->line out source, 0000->PV, etc.)) 7984(CRC16/modbus)
+aaaa(trid) 0001(prot.id)  0009(length) ff(unit id) 04(functcode) ff(unit id) 03(functcode) 02(length) 0001(data(here: 0001->line out source, 0000->PV, etc.)) 7984(CRC16/modbus)
 
+_For SMG-II:_
+>npm start query-modbus aaaa0102000aff040103e2040001f3b3
+
+Request:
+aa aa **01 02** 00 0a ff 04   01 03 e2 04 00 01 f3 b3
+
+aaaa(trid)  0102(prot.id)  000a(length) ff(unit id) 04(functcode) 01(unit id) 03(functcode) e204(register address(seen on pc software serial)) 0001(offset) f3b3(CRC16/modbus)
+
+Response should be:
+aa aa **01 02** 00 09 ff 04   01 03 02 00 01 79 84
+
+aaaa(trid) **0102**(prot.id)  0009(length) ff(unit id) 04(functcode) 01(unit id) 03(functcode) 02(length) 0001(data(here: 0001->line out source, 0000->PV, etc.)) 7984(CRC16/modbus)
 
 First register write test (sets charger source priority to SNU(02)):
 
->npm start query-modbus 00010001000dff04ff10E20F0001020002ad04
+_For SMX-II_
+>npm start query-modbus 00**0100**01000dff04ff10E20F0001020002ad04
 
 Packet beginning is like the others, additional section: 10(write func.) E20F(register address to start writing at: see commands.json) 0001(write 2byte) 02(data length) 0002(data: 0->cso, 1->sub, 2->snu, 3->oso)
 
@@ -130,5 +149,8 @@ These devices use the same modbus register addresses. Found this info in an othe
 Some related MODBUS spec from SRNE: https://www.midnitesolar.com/pdfs/Solar_inverter_charger_communication_protocol.pdf
 
 Possible hardware info (plug pro adapter): https://fccid.io/2ASAF-PLUGPRO03V50/
+
+**Info about EASUN iSolar-SMG-II:**
+https://github.com/syssi/esphome-smg-ii/blob/main/docs/SMG-RS232%2BCommunication%2BProtocol%2BV1.0.1.pdf
 
 
