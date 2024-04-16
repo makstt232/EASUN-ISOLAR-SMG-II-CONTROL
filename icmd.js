@@ -301,11 +301,19 @@ function runscript(args) {
                                     //fault codes
                                     if (def.format===101){
                                         nb = "FAULT0: "+data.readUInt16BE(startpos)+": "+def.unit[data.readUInt16BE(startpos)]+" "+
-                                            "FAULT1: "+data.readUInt16BE(startpos+2)+": "+def.unit[data.readUInt16BE(startpos+2)]+" "+
-                                            "FAULT2: "+data.readUInt16BE(startpos+4)+": "+def.unit[data.readUInt16BE(startpos+4)]+" "+
-                                            "FAULT3: "+data.readUInt16BE(startpos+6)+": "+def.unit[data.readUInt16BE(startpos+6)]+" ";
+                                             "FAULT1: "+data.readUInt16BE(startpos+2)+": "+def.unit[data.readUInt16BE(startpos+2)]+" "+
+                                             "FAULT2: "+data.readUInt16BE(startpos+4)+": "+def.unit[data.readUInt16BE(startpos+4)]+" "+
+                                             "FAULT3: "+data.readUInt16BE(startpos+6)+": "+def.unit[data.readUInt16BE(startpos+6)]+" ";
                                             
                                     }
+                                    // added by maxtt232 14.04.2024
+                                    if (def.format===102){
+                                        nb = data.readUInt32BE(startpos)+": "+def.unit[data.readUInt32BE(startpos)];
+                                            
+                                    }
+
+
+
                                 }
                                 
                                 val=nb;
@@ -358,9 +366,9 @@ function runscript(args) {
 
                     console.log("String format:\n",data.toString());
                 }
-                
-                console.log("Result Data");
-                
+
+                console.log("\nResult data");
+
                 let cmdstr=getcommseqcmd(command_seq);
                 
                 if (cmdstr === undefined) { 
