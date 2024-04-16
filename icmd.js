@@ -5,6 +5,9 @@ var localIpV4Address = require("local-ipv4-address");
 const { exit } = require('process');
 const { Buffer } = require('buffer');
 
+//if debug = true yu can see debug information in the console
+const DEBUG = false;
+
 
 function runscript(args) {
 
@@ -17,12 +20,14 @@ function runscript(args) {
         console.log(e);
     }
 
-    console.log("!!! 0. Please connect to the datalogger wifi access point or ensure the device is accessible on your network !!!");
-    console.log("!!! On initial setup the datalogger ip address is the gateway (obtained by dhcp from the datalogger wifi AP) !!!");
-    console.log("!!! Provide custom local ip if the machine that you are running this script from is available on a custom route not on the default one (vpn setup) !!!");
+    if (DEBUG) {
+     console.log("!!! 0. Please connect to the datalogger wifi access point or ensure the device is accessible on your network !!!");
+     console.log("!!! On initial setup the datalogger ip address is the gateway (obtained by dhcp from the datalogger wifi AP) !!!");
+     console.log("!!! Provide custom local ip if the machine that you are running this script from is available on a custom route not on the default one (vpn setup) !!!");
 
-    console.log("Quick examples:\n Query all inverter parameters: npm start get-smx-param [datalogger ip address]");
-    console.log(" Set output priority(parameter 1) to SOL: npm start set-smx-param [datalogger ip address] 1 SOL ");
+     console.log("Quick examples:\n Query all inverter parameters: npm start get-smx-param [datalogger ip address]");
+     console.log(" Set output priority(parameter 1) to SOL: npm start set-smx-param [datalogger ip address] 1 SOL ");
+    }
 
     let customip="";
     let original_argv=args.slice();
@@ -47,13 +52,15 @@ function runscript(args) {
     });
     
     var myargs = args.slice(2);
+     
+    if (DEBUG) {
+      console.log("\nUSAGE: COMMAND [options] [localip=192.168.89.255]\n\nCOMMANDS:")
+      commands.commandsequences.forEach(function(cs){
+           console.log(cs.name+" "+cs.args+" \n ("+cs.desc+")\n");
+      });
 
-    console.log("\nUSAGE: COMMAND [options] [localip=192.168.89.255]\n\nCOMMANDS:")
-    commands.commandsequences.forEach(function(cs){
-        console.log(cs.name+" "+cs.args+" \n ("+cs.desc+")\n");
-    });
-
-    console.log("\n");
+      console.log("\n");
+    }
 
     var global_commandsequence=""; //run more commands after another
     var global_commandparam=""; //run more parameters for 1 command
@@ -162,20 +169,21 @@ function runscript(args) {
                     ip=customip;
                 }
                 
-                console.log("Using local ip to create TCP server: "+(ip));
+                if (DEBUG) console.log("Using local ip to create TCP server: "+(ip));
 
                 starttcp();
 
                 var client = dgram.createSocket('udp4');
                 let port=58899;
                 let command="set>server="+ip+":8899;";
-                
-                console.log("Sending UDP packet(port: "+port+") to inform datalogger device to connect the TCP server:");
-                console.log(command);
+                if (DEBUG) {
+                 console.log("Sending UDP packet(port: "+port+") to inform datalogger device to connect the TCP server:");
+                 console.log(command);
+                }
 
                 client.on('listening', function () {
                     var address = client.address();
-                    console.log('UDP server listening on ' + address.address + ":" + address.port);
+                    if (DEBUG) console.log('UDP server listening on ' + address.address + ":" + address.port);
                 });
 
                 client.on('error', (err) => {
@@ -184,8 +192,10 @@ function runscript(args) {
                 });
 
                 client.on('message',function(message, remote){
-                    console.log(remote.address + ':' + remote.port +' - ' + message);
-                    console.log("Got answer, closing UDP socket...");
+                    if (DEBUG) {
+                     console.log(remote.address + ':' + remote.port +' - ' + message);
+                     console.log("Got answer, closing UDP socket...");
+                    }
                     client.close();
                 });
 
@@ -205,11 +215,11 @@ function runscript(args) {
         let port=8899;
         let command_seq=0;
 
-        console.log("starting TCP server(port: "+port+") to recieve data....");
+        if (DEBUG) console.log("starting TCP server(port: "+port+") to recieve data....");
 
         var server = net.createServer(function(socket) {
 
-            console.log(`${socket.remoteAddress}:${socket.remotePort} connected on TCP`);
+            if (DEBUG) console.log(`${socket.remoteAddress}:${socket.remotePort} connected on TCP`);
             
             let outsum="\n";
             let outobj={};
@@ -243,7 +253,7 @@ function runscript(args) {
                         let val="";
                         val=data.toString('hex');
 
-                        process.stdout.write("Response orig:\n");
+                        if (DEBUG) process.stdout.write("Response orig:\n");
                         dumpdata(data);
 
                         //data starts at byte 11
@@ -262,7 +272,7 @@ function runscript(args) {
         
                         let hcrc=chcrc.substring(2)+chcrc.substring(0,2);
                         
-                        console.log("(Response info len: "+lenval+" Data type: "+def.type+" "+"CRC check: "+hcrc+" "+rcrc+")");
+                        if (DEBUG) console.log("(Response info len: "+lenval+" Data type: "+def.type+" "+"CRC check: "+hcrc+" "+rcrc+")");
 
                         if (hcrc!=rcrc){
 
@@ -349,7 +359,7 @@ function runscript(args) {
                             
                         }    
 
-                        process.stdout.write("Response:\n");
+                        if (DEBUG) process.stdout.write("Response:\n");
                         dumpdata(data,handled);
                         
                     });
@@ -360,19 +370,19 @@ function runscript(args) {
                         command_seq--;
                     }
                 }else{
-                    process.stdout.write("Response:\n");
+                    if (DEBUG) process.stdout.write("Response:\n");
 
                     dumpdata(data);
 
                     console.log("String format:\n",data.toString());
                 }
 
-                console.log("\nResult data");
-
+                
                 let cmdstr=getcommseqcmd(command_seq);
                 
                 if (cmdstr === undefined) { 
-                    console.log(outsum);
+                    //console.log("\nResult data");
+                    //console.log(outsum);
                     
                     if (Object.keys(outobj).length === 0 && outobj.constructor === Object) {
                         console.log("JSON output:\n",outobj);
@@ -451,7 +461,12 @@ function runscript(args) {
 
     function getdatacmd(data){
 
-        console.log("\nCommand: "+data);
+        if (DEBUG) console.log("\nCommand: "+data);
+
+        //if (data=="--help"){
+        //    console.log("HELP");
+        //    return "";
+        //}
 
         let obj=commands.commands.find(o => o.name === data );
         //definition array link following
@@ -485,7 +500,7 @@ function runscript(args) {
         cmdtorun=cmdtorun.replace('{SEQ}',String(global_tcp_seq).padStart(4, '0'));
         global_tcp_seq++;
 
-        process.stdout.write("Request: ");
+        if (DEBUG) process.stdout.write("Request: ");
         dumpdata(cmdtorun);
         
 
@@ -542,7 +557,7 @@ function runscript(args) {
 
         });
 
-        console.log(out);
+        if (DEBUG) console.log(out);
 
     }
 
@@ -557,7 +572,7 @@ function runscript(args) {
             
             addr = cmd.definition[global_commandparam].address;
             type = cmd.definition[global_commandparam].type;
-            console.log("Querying param: "+cmd.definition[global_commandparam].name+"\n");
+            if (DEBUG) console.log("Querying param: "+cmd.definition[global_commandparam].name+"\n");
             if (grouped_commandparam=="") {
                 grouped_commandparam=0;
             }
