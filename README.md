@@ -30,7 +30,7 @@ My observations about the provided original installation process are the followi
 1. install nodejs (with npm) and git
 > apt install git nodejs
 2. clone the repo
->git clone https://github.com/suletom/EASUN-ISOLAR-SMG-II-CONTROL.git
+>git clone https://github.com/makstt232/EASUN-ISOLAR-SMG-II-CONTROL.git
 >
 >cd EASUN-ISOLAR-SMG-II-CONTROL
 3. install needed node modules: 
