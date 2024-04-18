@@ -67,7 +67,11 @@ Example:
 By sniffing the network traffic i found some command (HEX: aaaa00010003001100) that requests an all in one information packet with all the information seen in the SmartESS app. I extracted lot of data from that, but not everything is obvoius for me.
 
 Example to query all params one by one with crc check:
+_For SMX-II_
 >npm start get-smx-param [datalogger ip address]
+
+_For SMG-II_
+>npm start get-smg-param [datalogger ip address]
 
 Some register addresses has connection by the ones sent on serial line but not all of them and i think this command is not a standard MODBUS TCP for the inverter, rather something for the datalogger.
 Example(same as above without parsing): 
@@ -117,8 +121,11 @@ _For SMX-II_
 Packet beginning is like the others, additional section: 10(write func.) E20F(register address to start writing at: see commands.json) 0001(write 2byte) 02(data length) 0002(data: 0->cso, 1->sub, 2->snu, 3->oso)
 
 SET output priority (parameter 1 in commands.json) to 'SOL' (on 6.63 only the most important parameters can be set over modbus)
-
+_For SMX-II_
 >npm start set-smx-param [datalogger ip address] 1 SOL
+
+_For SMG-II_
+>npm start set-smg-param [datalogger ip address] 1 SOL
 
 If you are interested free to contact me.
 
