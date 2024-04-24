@@ -1,3 +1,4 @@
+
 let net = require('net');
 let fs = require('fs');
 let dgram = require('dgram');
@@ -316,13 +317,25 @@ function runscript(args) {
                                              "FAULT3: "+data.readUInt16BE(startpos+6)+": "+def.unit[data.readUInt16BE(startpos+6)]+" ";
                                             
                                     }
+
                                     // added by maxtt232 14.04.2024
                                     if (def.format===102){
                                         nb = data.readUInt32BE(startpos)+": "+def.unit[data.readUInt32BE(startpos)];
-                                            
+                                                     
                                     }
 
-
+                                    // added by maxtt232 16.04.2024
+                                    if (def.format===103){
+                                        //nb = data.readUInt32BE(startpos)+": "+def.unit[data.readUInt32BE(startpos)];
+                                        answerbuff = data.readUInt32BE(startpos);
+                                        nb="";
+                                        for(let i=0;i<19;i++) {
+                                           if (getBit(answerbuff,  i) == 1){
+                                              nb += i +": "+def.unit[i]+" ";
+                                           }
+                                        } 
+                                        nb += "Warning(s):";                                           
+                                    }
 
                                 }
                                 
@@ -730,6 +743,11 @@ function runscript(args) {
 
         return crc;
         
+    }
+
+    function getBit (n, bitPosition){
+       number = (n >> bitPosition) & 1;
+       return number;
     }
 
 }
